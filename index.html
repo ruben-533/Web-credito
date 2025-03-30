@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Crédito - Bancoholanda</title>
+<style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f7f9fc;
+        }
+        .header {
+            background-color: #004884;
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .calculator, .results {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #004884;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .btn {
+            background-color: #004884;
+            color: white;
+            padding: 14px;
+            width: 100%;
+            font-size: 17px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #003366;
+        }
+        .hidden {
+            display: none;
+        }
+        .table-container {
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #004884;
+            color: white;
+        }
+</style>
+</head>
+<body>
+<div class="header">
+<h1>BANCOHOLANDA🌎</h1>
+<p>Crédito de Libre Inversión</p>
+</div>
+<div class="calculator">
+<div class="form-group">
+<label for="loanAmount">Monto que deseas solicitar:</label>
+<input type="number" id="loanAmount" value="1000000">
+</div>
+<div class="form-group">
+<label for="birthDate">Fecha de Nacimiento:</label>
+<input type="date" id="birthDate">
+</div>
+<div class="form-group">
+<label for="interestRate">Tasa de interés mensual (%):</label>
+<input type="number" id="interestRate" value="1.04" step="0.01">
+</div>
+<div class="form-group">
+<label for="loanTerm">Plazo en meses:</label>
+<input type="number" id="loanTerm" value="24">
+</div>
+<button class="btn" onclick="validateAge()">CALCULAR CRÉDITO</button>
+</div>
+<div id="results-section" class="hidden">
+<div class="results">
+<h3>Detalles del Crédito</h3>
+<p>Cuota mensual: <span id="monthlyPayment"></span></p>
+</div>
+</div>
+<div id="table-container" class="hidden">
+<h3>Detalle de Pagos</h3>
+<table>
+<thead>
+<tr>
+<th>Mes</th>
+<th>Pago</th>
+<th>Capital</th>
+<th>Interés</th>
+<th>Saldo</th>
+</tr>
+</thead>
+<tbody id="paymentTable"></tbody>
+</table>
+</div>
+<script>
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString('es-CO');
+        }
+ 
+        function validateAge() {
+            let birthDate = new Date(document.getElementById('birthDate').value);
+            let today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            let monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+ 
+            if (age < 18 || age > 84) {
+                alert("Lo sentimos, debes tener entre 18 y 84 años para solicitar el crédito.");
+                return;
+            }
+            calculatePayments();
+        }
+        function calculatePayments() {
+            let amount = parseFloat(document.getElementById('loanAmount').value);
+            let term = parseInt(document.getElementById('loanTerm').value);
+            let rate = parseFloat(document.getElementById('interestRate').value) / 100;
+            let monthlyPayment = (amount * rate) / (1 - Math.pow(1 + rate, -term));
+            document.getElementById('monthlyPayment').textContent = formatCurrency(monthlyPayment.toFixed(0));
+            document.getElementById('results-section').classList.remove('hidden');
+            showTable();
+        }
+        function showTable() {
+            let amount = parseFloat(document.getElementById('loanAmount').value);
+            let term = parseInt(document.getElementById('loanTerm').value);
+            let rate = parseFloat(document.getElementById('interestRate').value) / 100;
+            let monthlyPayment = (amount * rate) / (1 - Math.pow(1 + rate, -term));
+            let tableBody = document.getElementById('paymentTable');
+            tableBody.innerHTML = '';
+            let balance = amount;
+            for (let i = 1; i <= term; i++) {
+                let interest = balance * rate;
+                let principal = monthlyPayment - interest;
+                balance -= principal;
+                let row = `<tr>
+<td>${i}</td>
+<td>${formatCurrency(monthlyPayment.toFixed(0))}</td>
+<td>${formatCurrency(principal.toFixed(0))}</td>
+<td>${formatCurrency(interest.toFixed(0))}</td>
+<td>${formatCurrency(balance.toFixed(0))}</td>
+</tr>`;
+                tableBody.innerHTML += row;
+            }
+            document.getElementById('table-container').classList.remove('hidden');
+        }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
